@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overleaf
+  namespace: overleaf
+  labels:
+    app: overleaf
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: overleaf
+  template:
+    metadata:
+      labels:
+        app: overleaf
+    spec:
+      containers:
+        - name: overleaf
+          image: sharelatex/sharelatex:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: OVERLEAF_APP_NAME
+              value: {{ .Values.overleaf.appName | quote }}
+            - name: OVERLEAF_MONGO_URL
+              value: "mongodb://mongodb:27017/sharelatex?replicaSet={{ .Values.mongodb.replicaSetName }}"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: OVERLEAF_SITE_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: OVERLEAF_NAV_TITLE
+              value: {{ .Values.overleaf.appName | quote }}
+            - name: OVERLEAF_HEADER_IMAGE_URL
+              value: ""
+            - name: OVERLEAF_LEFT_FOOTER
+              value: ""
+            - name: OVERLEAF_RIGHT_FOOTER
+              value: ""
+            - name: OVERLEAF_ADMIN_EMAIL
+              value: "admin@{{ .Values.ingress.host }}"
+            - name: OVERLEAF_EMAIL_FROM_ADDRESS
+              value: "noreply@{{ .Values.ingress.host }}"
+          volumeMounts:
+            - name: overleaf-data
+              mountPath: /var/lib/overleaf
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: {{ .Values.resources.overleaf.requests.memory | quote }}
+              cpu: {{ .Values.resources.overleaf.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.resources.overleaf.limits.memory | quote }}
+              cpu: {{ .Values.resources.overleaf.limits.cpu | quote }}
+      volumes:
+        - name: overleaf-data
+          persistentVolumeClaim:
+            claimName: overleaf-pvc
+      terminationGracePeriodSeconds: 60

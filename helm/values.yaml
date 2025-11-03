@@ -1,0 +1,44 @@
+ingress:
+  host: overleaf.timothyw.dev
+  ingressClassName: traefik
+
+overleaf:
+  appName: "Overleaf"
+  storage:
+    size: "5Gi"
+    storageClass: "local"
+
+mongodb:
+  port: "30020"
+  replicaSetName: "overleaf"
+  storage:
+    size: "2Gi"
+    storageClass: "local"
+
+redis:
+  storage:
+    size: "256Mi"
+    storageClass: "local"
+
+resources:
+  overleaf:
+    requests:
+      memory: "512Mi"
+      cpu: "100m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  mongodb:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  redis:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"

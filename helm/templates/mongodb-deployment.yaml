@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: overleaf
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:6.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - mongod
+            - --replSet
+            - {{ .Values.mongodb.replicaSetName }}
+            - --bind_ip_all
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: "sharelatex"
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+            - name: mongodb-init
+              mountPath: /docker-entrypoint-initdb.d
+          livenessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              memory: {{ .Values.resources.mongodb.requests.memory | quote }}
+              cpu: {{ .Values.resources.mongodb.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.resources.mongodb.limits.memory | quote }}
+              cpu: {{ .Values.resources.mongodb.limits.cpu | quote }}
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+        - name: mongodb-init
+          configMap:
+            name: mongodb-init
