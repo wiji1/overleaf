@@ -21,13 +21,13 @@ spec:
             - -c
             - |
               echo "Waiting for MongoDB to be ready..."
-              until mongosh --host mongodb --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+              until mongosh --host mongodb-0.mongodb.overleaf.svc.cluster.local --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
                 echo "MongoDB not ready yet, waiting..."
                 sleep 2
               done
 
               echo "Checking if replica set is already initialized..."
-              RS_STATUS=$(mongosh --host mongodb --quiet --eval "try { rs.status().ok } catch(e) { 0 }")
+              RS_STATUS=$(mongosh --host mongodb-0.mongodb.overleaf.svc.cluster.local --quiet --eval "try { rs.status().ok } catch(e) { 0 }")
 
               if [ "$RS_STATUS" = "1" ]; then
                 echo "Replica set already initialized, skipping initialization."
@@ -35,18 +35,18 @@ spec:
               fi
 
               echo "Initializing replica set '{{ .Values.mongodb.replicaSetName }}'..."
-              mongosh --host mongodb --eval "
+              mongosh --host mongodb-0.mongodb.overleaf.svc.cluster.local --eval "
                 rs.initiate({
                   _id: '{{ .Values.mongodb.replicaSetName }}',
                   members: [
-                    { _id: 0, host: 'mongodb:27017' }
+                    { _id: 0, host: 'mongodb-0.mongodb.overleaf.svc.cluster.local:27017' }
                   ]
                 })
               "
 
               echo "Waiting for replica set to elect primary..."
               for i in {1..30}; do
-                PRIMARY=$(mongosh --host mongodb --quiet --eval "rs.status().members.find(m => m.state === 1) ? 'true' : 'false'")
+                PRIMARY=$(mongosh --host mongodb-0.mongodb.overleaf.svc.cluster.local --quiet --eval "rs.status().members.find(m => m.state === 1) ? 'true' : 'false'")
                 if [ "$PRIMARY" = "true" ]; then
                   echo "Replica set initialized successfully! Primary elected."
                   exit 0

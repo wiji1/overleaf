@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongodb
   namespace: overleaf
   labels:
     app: mongodb
 spec:
+  serviceName: mongodb
   replicas: 1
-  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: mongodb
@@ -25,6 +25,8 @@ spec:
             - --replSet
             - {{ .Values.mongodb.replicaSetName }}
             - --bind_ip_all
+            - --wiredTigerCacheSizeGB
+            - "0.125"
           ports:
             - containerPort: 27017
               name: mongodb
@@ -59,7 +61,12 @@ spec:
             limits:
               memory: {{ .Values.resources.mongodb.limits.memory | quote }}
               cpu: {{ .Values.resources.mongodb.limits.cpu | quote }}
-      volumes:
-        - name: mongodb-data
-          persistentVolumeClaim:
-            claimName: mongodb-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.mongodb.storage.storageClass | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.mongodb.storage.size | quote }}
