@@ -18,13 +18,15 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: mongo:6.0
+          image: mongo:8.0
           imagePullPolicy: IfNotPresent
           command:
             - mongod
             - --replSet
             - {{ .Values.mongodb.replicaSetName }}
             - --bind_ip_all
+            - --wiredTigerCacheSizeGB
+            - "0.125"
           ports:
             - containerPort: 27017
               name: mongodb
