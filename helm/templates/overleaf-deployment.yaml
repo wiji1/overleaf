@@ -24,12 +24,9 @@ spec:
             - /bin/bash
             - -c
             - |
-              echo "Installing TeX Live scheme-full..."
+              echo "Installing TeX Live scheme-full (this may take several minutes)..."
               /usr/local/bin/tlmgr install scheme-full
               echo "TeX Live installation complete!"
-          volumeMounts:
-            - name: texlive-data
-              mountPath: /usr/local/texlive
       containers:
         - name: overleaf
           image: sharelatex/sharelatex:6.0.0
@@ -59,8 +56,6 @@ spec:
           volumeMounts:
             - name: overleaf-data
               mountPath: /var/lib/overleaf
-            - name: texlive-data
-              mountPath: /usr/local/texlive
           livenessProbe:
             httpGet:
               path: /
@@ -86,6 +81,4 @@ spec:
         - name: overleaf-data
           persistentVolumeClaim:
             claimName: overleaf-pvc
-        - name: texlive-data
-          emptyDir: {}
       terminationGracePeriodSeconds: 60
