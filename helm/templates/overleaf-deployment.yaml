@@ -24,6 +24,8 @@ spec:
             - /bin/bash
             - -c
             - |
+              echo "Updating tlmgr..."
+              /usr/local/bin/tlmgr update --self
               echo "Installing TeX Live scheme-full (this may take several minutes)..."
               /usr/local/bin/tlmgr install scheme-full
               echo "TeX Live installation complete!"
