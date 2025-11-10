@@ -25,7 +25,7 @@ spec:
             - -c
             - |
               echo "Installing TeX Live scheme-full..."
-              tlmgr install scheme-full
+              /usr/local/bin/tlmgr install scheme-full
               echo "TeX Live installation complete!"
           volumeMounts:
             - name: texlive-data
