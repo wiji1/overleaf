@@ -16,6 +16,7 @@ spec:
       labels:
         app: overleaf
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: overleaf
           image: sharelatex/sharelatex:6.0.0
