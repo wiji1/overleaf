@@ -59,14 +59,14 @@ spec:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 1800
+            initialDelaySeconds: 2400
             periodSeconds: 30
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 1800
+            initialDelaySeconds: 2400
             periodSeconds: 10
             timeoutSeconds: 5
           resources:
