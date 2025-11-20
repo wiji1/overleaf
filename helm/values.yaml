@@ -1,5 +1,5 @@
 ingress:
-  host: overleaf.timothyw.dev
+  host: overleaf.wiji.dev
   ingressClassName: traefik
 
 overleaf:
