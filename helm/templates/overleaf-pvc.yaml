@@ -12,3 +12,27 @@ spec:
   resources:
     requests:
       storage: {{ .Values.overleaf.storage.size }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: overleaf-pv
+  labels:
+    app: overleaf
+spec:
+  capacity:
+    storage: {{ .Values.overleaf.storage.size }}
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.overleaf.storage.storageClass }}
+  local:
+    path: /mnt/data/overleaf 
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - machine4
