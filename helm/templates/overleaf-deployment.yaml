@@ -16,6 +16,8 @@ spec:
       labels:
         app: overleaf
     spec:
+      nodeSelector:
+          kubernetes.io/hostname: machine4  # or any node except machine2
       automountServiceAccountToken: false
       containers:
         - name: overleaf
