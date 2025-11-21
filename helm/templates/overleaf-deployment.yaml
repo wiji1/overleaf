@@ -21,7 +21,6 @@ spec:
         - name: overleaf
           image: sharelatex/sharelatex:6.0.0
           imagePullPolicy: Always
-          command: ["/bin/bash", "-c", "echo 'Installing TeX Live...'"]
           ports:
             - containerPort: 80
               name: http
