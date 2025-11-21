@@ -21,15 +21,7 @@ spec:
         - name: overleaf
           image: sharelatex/sharelatex:6.0.0
           imagePullPolicy: Always
-          command:
-            - /bin/bash
-            - -c
-            - |
-              echo "Installing TeX Live scheme-full before starting Overleaf..."
-              /usr/local/bin/tlmgr update --self
-              /usr/local/bin/tlmgr install scheme-full
-              echo "TeX Live installation complete! Starting Overleaf..."
-              exec /sbin/my_init
+          command: ["/bin/bash", "-c", "echo 'Installing TeX Live...' && /usr/local/bin/tlmgr update --self && /usr/local/bin/tlmgr install scheme-full && exec /sbin/my_init"]
           ports:
             - containerPort: 80
               name: http
