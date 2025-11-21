@@ -6,7 +6,7 @@ overleaf:
   appName: "Overleaf"
   storage:
     size: "5Gi"
-    storageClass: "local"
+    storageClass: "local-path"
 
 mongodb:
   replicaSetName: "overleaf"
